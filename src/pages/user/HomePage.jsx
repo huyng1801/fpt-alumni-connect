@@ -1,5 +1,6 @@
 import React from 'react';
 import { Layout, Menu, List, Typography } from 'antd';
+import { Link } from 'react-router-dom'; // Import Link
 import UserLayout from '../../layouts/UserLayout';
 
 const { Sider, Content } = Layout;
@@ -52,7 +53,7 @@ const HomePage = () => {
                   extra={<img width={180} alt="ảnh bìa bài viết" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/FPT_logo_2010.svg/1200px-FPT_logo_2010.svg.png" style={{ borderRadius: '8px' }} />}
                 >
                   <List.Item.Meta
-                    title={<a href="#" style={{ fontSize: '18px', color: '#1890ff' }}>{post.title}</a>}
+                    title={<Link to={`/post/${post.id}`} style={{ fontSize: '18px', color: '#1890ff' }}>{post.title}</Link>} // Updated Link
                     description={<Text style={{ color: '#595959' }}>{post.content}</Text>}
                   />
                 </List.Item>

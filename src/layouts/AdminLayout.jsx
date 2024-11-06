@@ -3,11 +3,9 @@ import { Layout, Menu, Breadcrumb } from 'antd';
 import { Link } from 'react-router-dom';
 import {
   HomeOutlined,
-  FlagOutlined,
-  TagOutlined,
-  FolderOutlined,
-  FolderOpenOutlined,
-  AppstoreAddOutlined, // Changed to AppstoreAddOutlined for products
+  UserOutlined,       // For User Management
+  FileTextOutlined,   // For Posts
+  UserSwitchOutlined, // For Mentorship Requests
 } from '@ant-design/icons'; // Importing the icons
 import './AdminLayout.css'; // Assuming your custom styles
 
@@ -29,8 +27,14 @@ const AdminLayout = ({ children }) => {
           <Menu.Item key="1" icon={<HomeOutlined />}>
             <Link to="/admin/dashboard">Trang chủ</Link>
           </Menu.Item>
-          <Menu.Item key="2" icon={<FlagOutlined />}>
+          <Menu.Item key="2" icon={<UserOutlined />}>
             <Link to="/admin/user">Người dùng</Link>
+          </Menu.Item>
+          <Menu.Item key="3" icon={<FileTextOutlined />}>
+            <Link to="/admin/post">Bài viết</Link>
+          </Menu.Item>
+          <Menu.Item key="4" icon={<UserSwitchOutlined />}>
+            <Link to="/admin/mentor_ship_request">Yêu cầu</Link>
           </Menu.Item>
         </Menu>
       </Sider>

@@ -1,7 +1,27 @@
 import React, { useState } from 'react';
-import { Layout, Form, Input, Button, Table, Modal, Select, DatePicker, Upload, message } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
+import {
+  Layout,
+  Form,
+  Input,
+  Button,
+  Table,
+  Modal,
+  Select,
+  DatePicker,
+  Upload,
+  message,
+  Checkbox,
+  Row,
+  Col
+} from 'antd';
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  UploadOutlined
+} from '@ant-design/icons';
 import AdminLayout from '../../layouts/AdminLayout';
+import moment from 'moment';
 
 const { Content } = Layout;
 const { Option } = Select;
@@ -29,43 +49,64 @@ const UserPage = () => {
   const [editingUser, setEditingUser] = useState(null);
   const [form] = Form.useForm();
 
-  // Mở modal để thêm hoặc chỉnh sửa người dùng
+  // Open modal for adding or editing a user
   const openModal = (user = null) => {
     setEditingUser(user);
     if (user) {
-      form.setFieldsValue(user);
+      form.setFieldsValue({
+        ...user,
+        createdAt: user.createdAt ? moment(user.createdAt) : null,
+      });
     } else {
       form.resetFields();
+      form.setFieldsValue({ createdAt: moment() });
     }
     setIsModalOpen(true);
   };
 
-  // Xử lý thêm hoặc cập nhật người dùng
+  // Handle adding or updating user
   const handleSaveUser = () => {
     form
       .validateFields()
       .then((values) => {
+        // Handle file upload separately if needed
+        if (values.profilePicture && values.profilePicture.fileList.length > 0) {
+          values.profilePicture = values.profilePicture.fileList[0].originFileObj;
+        } else {
+          values.profilePicture = null;
+        }
+
         if (editingUser) {
           setUsers((prevUsers) =>
             prevUsers.map((user) =>
-              user.userId === editingUser.userId ? { ...user, ...values } : user
+              user.userId === editingUser.userId ? { ...user, ...values, updatedAt: new Date().toISOString() } : user
             )
           );
         } else {
           setUsers((prevUsers) => [
             ...prevUsers,
-            { ...values, userId: prevUsers.length + 1, createdAt: new Date().toISOString() }
+            {
+              ...values,
+              userId: prevUsers.length + 1,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              profilePicture: null, // Handle as needed
+              createdBy: 'Admin', // Replace with actual user
+              updatedBy: 'Admin'  // Replace with actual user
+            }
           ]);
         }
         setIsModalOpen(false);
         setEditingUser(null);
+        form.resetFields();
+        message.success(`Người dùng đã được ${editingUser ? 'cập nhật' : 'thêm'} thành công`);
       })
       .catch((info) => {
         console.log('Validate Failed:', info);
       });
   };
 
-  // Xác nhận xóa người dùng
+  // Confirm deletion of a user
   const handleDeleteUser = (userId) => {
     Modal.confirm({
       title: 'Bạn có chắc chắn muốn xóa người dùng này?',
@@ -76,22 +117,33 @@ const UserPage = () => {
     });
   };
 
-  // Cột của bảng
+  // Table columns configuration
   const columns = [
     { title: 'ID', dataIndex: 'userId', key: 'userId' },
     { title: 'Tên', dataIndex: 'firstName', key: 'firstName' },
     { title: 'Họ', dataIndex: 'lastName', key: 'lastName' },
     { title: 'Email', dataIndex: 'email', key: 'email' },
-    { title: 'Vai trò', dataIndex: 'roleId', key: 'roleId', render: (roleId) => (roleId === 1 ? 'Quản trị' : 'Người dùng') },
+    {
+      title: 'Vai trò',
+      dataIndex: 'roleId',
+      key: 'roleId',
+      render: (roleId) => (roleId === 1 ? 'Quản trị' : 'Người dùng')
+    },
     {
       title: 'Hành động',
       key: 'actions',
       render: (_, user) => (
         <>
-          <Button icon={<EditOutlined />} onClick={() => openModal(user)}>
-          </Button>
-          <Button icon={<DeleteOutlined />} danger onClick={() => handleDeleteUser(user.userId)}>
-          </Button>
+          <Button
+            icon={<EditOutlined />}
+            onClick={() => openModal(user)}
+            style={{ marginRight: 8 }}
+          />
+          <Button
+            icon={<DeleteOutlined />}
+            danger
+            onClick={() => handleDeleteUser(user.userId)}
+          />
         </>
       )
     }
@@ -103,55 +155,105 @@ const UserPage = () => {
         <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
           Thêm người dùng
         </Button>
-        <Table columns={columns} dataSource={users} rowKey="userId" style={{ marginTop: 16 }} />
+        <Table
+          columns={columns}
+          dataSource={users}
+          rowKey="userId"
+          style={{ marginTop: 16 }}
+        />
 
-        {/* Modal Thêm/Chỉnh sửa Người Dùng */}
+        {/* Add/Edit User Modal */}
         <Modal
           title={editingUser ? 'Chỉnh sửa người dùng' : 'Thêm người dùng'}
           visible={isModalOpen}
           onCancel={() => setIsModalOpen(false)}
           onOk={handleSaveUser}
           okText={editingUser ? 'Cập nhật' : 'Thêm'}
+          width={800} // Increase modal size
+          destroyOnClose
         >
           <Form form={form} layout="vertical">
-            <Form.Item name="firstName" label="Tên" rules={[{ required: true, message: 'Vui lòng nhập tên' }]}>
-              <Input />
-            </Form.Item>
-            <Form.Item name="lastName" label="Họ" rules={[{ required: true, message: 'Vui lòng nhập họ' }]}>
-              <Input />
-            </Form.Item>
-            <Form.Item name="email" label="Email" rules={[{ required: true, message: 'Vui lòng nhập email' }]}>
-              <Input type="email" />
-            </Form.Item>
-            <Form.Item name="emailVerified" label="Email đã xác thực" valuePropName="checked">
-              <Select>
-                <Option value={true}>Đã xác thực</Option>
-                <Option value={false}>Chưa xác thực</Option>
-              </Select>
-            </Form.Item>
-            <Form.Item name="roleId" label="Vai trò" rules={[{ required: true }]}>
-              <Select placeholder="Chọn vai trò">
-                <Option value={1}>Quản trị</Option>
-                <Option value={2}>Người dùng</Option>
-              </Select>
-            </Form.Item>
-            <Form.Item name="majorId" label="Mã ngành">
-              <Input />
-            </Form.Item>
-            <Form.Item name="isMentor" label="Là người hướng dẫn" valuePropName="checked">
-              <Select>
-                <Option value={true}>Có</Option>
-                <Option value={false}>Không</Option>
-              </Select>
-            </Form.Item>
-            <Form.Item name="profilePicture" label="Ảnh đại diện">
-              <Upload listType="picture" maxCount={1} beforeUpload={() => false}>
-                <Button icon={<UploadOutlined />}>Tải lên</Button>
-              </Upload>
-            </Form.Item>
-            <Form.Item name="createdAt" label="Ngày tạo">
-              <DatePicker showTime />
-            </Form.Item>
+            <Row gutter={16}>
+              {/* Left Column */}
+              <Col span={12}>
+                <Form.Item
+                  name="firstName"
+                  label="Tên"
+                  rules={[{ required: true, message: 'Vui lòng nhập tên' }]}
+                >
+                  <Input />
+                </Form.Item>
+                <Form.Item
+                  name="lastName"
+                  label="Họ"
+                  rules={[{ required: true, message: 'Vui lòng nhập họ' }]}
+                >
+                  <Input />
+                </Form.Item>
+                <Form.Item
+                  name="email"
+                  label="Email"
+                  rules={[
+                    { required: true, message: 'Vui lòng nhập email' },
+                    { type: 'email', message: 'Email không hợp lệ' }
+                  ]}
+                >
+                  <Input type="email" />
+                </Form.Item>
+                <Form.Item
+                  name="emailVerified"
+                  label="Email đã xác thực"
+                  valuePropName="checked"
+                >
+                  <Checkbox>Đã xác thực</Checkbox>
+                </Form.Item>
+                <Form.Item
+                  name="roleId"
+                  label="Vai trò"
+                  rules={[{ required: true, message: 'Vui lòng chọn vai trò' }]}
+                >
+                  <Select placeholder="Chọn vai trò">
+                    <Option value={1}>Quản trị</Option>
+                    <Option value={2}>Người dùng</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+
+              {/* Right Column */}
+              <Col span={12}>
+                <Form.Item
+                  name="majorId"
+                  label="Mã ngành"
+                >
+                  <Input />
+                </Form.Item>
+                <Form.Item
+                  name="isMentor"
+                  label="Là người hướng dẫn"
+                  valuePropName="checked"
+                >
+                  <Checkbox>Có</Checkbox>
+                </Form.Item>
+                <Form.Item
+                  name="profilePicture"
+                  label="Ảnh đại diện"
+                >
+                  <Upload
+                    listType="picture"
+                    maxCount={1}
+                    beforeUpload={() => false}
+                  >
+                    <Button icon={<UploadOutlined />}>Tải lên</Button>
+                  </Upload>
+                </Form.Item>
+                <Form.Item
+                  name="createdAt"
+                  label="Ngày tạo"
+                >
+                  <DatePicker showTime style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+            </Row>
           </Form>
         </Modal>
       </Content>
