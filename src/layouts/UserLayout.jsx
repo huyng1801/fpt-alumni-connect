@@ -8,8 +8,18 @@ const { Header, Content, Footer } = Layout;
 const UserLayout = ({ children }) => {
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Header className="header">
-        <div className="logo">FPT ALumni Connect</div>
+  <Header className="header">
+        {/* Logo Section */}
+        <div className="logo">
+          <img
+            src={`${process.env.PUBLIC_URL}/assets/images/logo.png`} // Path to your logo image
+            alt="FPT Alumni Connect Logo"
+            style={{ height: "40px", marginRight: "16px" }} // Adjust size and margin as needed
+          />
+          <span style={{ color: "#fff", fontSize: "18px" }}>FPT Alumni Connect</span>
+        </div>
+
+        {/* Search Bar */}
         <div className="search-bar">
           <Input.Search
             placeholder="Tìm kiếm diễn đàn..."
@@ -18,7 +28,6 @@ const UserLayout = ({ children }) => {
           />
         </div>
       </Header>
-
       <Menu
         theme="dark"
         mode="horizontal"
@@ -30,16 +39,13 @@ const UserLayout = ({ children }) => {
           <Link to="/">Diễn Đàn</Link>
         </Menu.Item>
         <Menu.Item key="2">
-          <Link to="/">Chủ Đề</Link>
+          <Link to="/user-event">Sự kiện</Link>
         </Menu.Item>
         <Menu.Item key="3">
-          <Link to="/create-post/">Bài Mới</Link>
+          <Link to="/user-job-post">Tuyển dụng</Link>
         </Menu.Item>
         <Menu.Item key="4">
-          <Link to="/">Giới Thiệu</Link>
-        </Menu.Item>
-        <Menu.Item key="5">
-          <Link to="/">Liên Hệ</Link>
+          <Link to="/cv">CV</Link>
         </Menu.Item>
       </Menu>
 

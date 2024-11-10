@@ -12,7 +12,8 @@ import {
   message,
   Checkbox,
   Row,
-  Col
+  Col,
+  Switch
 } from 'antd';
 import {
   PlusOutlined,
@@ -137,11 +138,15 @@ const UserPage = () => {
           <Button
             icon={<EditOutlined />}
             onClick={() => openModal(user)}
+            type="default"
+            shape="circle"
             style={{ marginRight: 8 }}
           />
           <Button
             icon={<DeleteOutlined />}
             danger
+            type="default"
+            shape="circle"
             onClick={() => handleDeleteUser(user.userId)}
           />
         </>
@@ -150,7 +155,7 @@ const UserPage = () => {
   ];
 
   return (
-    <AdminLayout>
+    <AdminLayout headerName="Người dùng">
       <Content style={{ padding: '24px' }}>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
           Thêm người dùng
@@ -202,12 +207,18 @@ const UserPage = () => {
                 </Form.Item>
                 <Form.Item
                   name="emailVerified"
-                  label="Email đã xác thực"
+                  label="Xác thực email"
                   valuePropName="checked"
                 >
-                  <Checkbox>Đã xác thực</Checkbox>
+                  <Switch checkedChildren="Đã xác thực" unCheckedChildren="Chưa xác thực" />
                 </Form.Item>
-                <Form.Item
+
+
+              </Col>
+
+              {/* Right Column */}
+              <Col span={12}>
+              <Form.Item
                   name="roleId"
                   label="Vai trò"
                   rules={[{ required: true, message: 'Vui lòng chọn vai trò' }]}
@@ -217,23 +228,27 @@ const UserPage = () => {
                     <Option value={2}>Người dùng</Option>
                   </Select>
                 </Form.Item>
-              </Col>
-
-              {/* Right Column */}
-              <Col span={12}>
                 <Form.Item
                   name="majorId"
-                  label="Mã ngành"
+                  label="Ngành"
+                  rules={[{ required: true, message: 'Vui lòng chọn mã ngành' }]}
                 >
-                  <Input />
+                  <Select placeholder="Chọn ngành">
+                    <Option value="1">Ngành 1</Option>
+                    <Option value="2">Ngành 2</Option>
+                    <Option value="3">Ngành 3</Option>
+                    {/* Add more options as needed */}
+                  </Select>
                 </Form.Item>
+
                 <Form.Item
                   name="isMentor"
                   label="Là người hướng dẫn"
                   valuePropName="checked"
                 >
-                  <Checkbox>Có</Checkbox>
+                  <Switch checkedChildren="Có" unCheckedChildren="Không" />
                 </Form.Item>
+
                 <Form.Item
                   name="profilePicture"
                   label="Ảnh đại diện"
@@ -246,12 +261,7 @@ const UserPage = () => {
                     <Button icon={<UploadOutlined />}>Tải lên</Button>
                   </Upload>
                 </Form.Item>
-                <Form.Item
-                  name="createdAt"
-                  label="Ngày tạo"
-                >
-                  <DatePicker showTime style={{ width: '100%' }} />
-                </Form.Item>
+            
               </Col>
             </Row>
           </Form>

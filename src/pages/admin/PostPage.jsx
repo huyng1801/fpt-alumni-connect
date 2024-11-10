@@ -78,18 +78,36 @@ const PostPage = () => {
       title: 'Hành động',
       key: 'actions',
       render: (_, post) => (
-        <>
-          <Button icon={<EditOutlined />} onClick={() => openModal(post)} />
-          <Button icon={<DeleteOutlined />} danger onClick={() => handleDeletePost(post.id)} />
-        </>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <Button
+            icon={<EditOutlined />}
+            onClick={() => openModal(post)}
+            type="default"
+            shape="circle"
+            title="Chỉnh sửa"
+          />
+          <Button
+            icon={<DeleteOutlined />}
+            danger
+            onClick={() => handleDeletePost(post.id)}
+            type="default"
+            shape="circle"
+            title="Xóa"
+          />
+        </div>
       )
     }
   ];
 
   return (
-    <AdminLayout>
+    <AdminLayout headerName="Bài viết">
       <Content style={{ padding: '24px' }}>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()} style={{ marginBottom: 16 }}>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => openModal()}
+          style={{ marginBottom: 16 }}
+        >
           Thêm bài viết
         </Button>
         <Table columns={columns} dataSource={posts} rowKey="id" />

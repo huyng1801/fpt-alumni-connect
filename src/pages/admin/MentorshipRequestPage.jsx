@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Layout, Form, Input, Button, Select, message, Table, Modal } from 'antd';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import AdminLayout from '../../layouts/AdminLayout';
 
 const { TextArea } = Input;
@@ -70,15 +71,27 @@ const MentorshipRequestPage = () => {
       key: 'action',
       render: (_, request) => (
         <>
-          <Button onClick={() => handleEdit(request)}>Chỉnh sửa</Button>
-          <Button danger onClick={() => handleDelete(request.id)}>Xóa</Button>
+          <Button
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(request)}
+            style={{ marginRight: 8 }}
+            type="default"
+            shape="circle"
+          />
+          <Button
+            icon={<DeleteOutlined />}
+            danger
+            onClick={() => handleDelete(request.id)}
+            type="default"
+            shape="circle"
+          />
         </>
       ),
     },
   ];
 
   return (
-    <AdminLayout>
+    <AdminLayout headerName="Yêu cầu hướng dẫn">
       <Layout.Content style={{ padding: '24px' }}>
         <Button type="primary" onClick={() => setIsModalVisible(true)}>
           Gửi Yêu cầu
