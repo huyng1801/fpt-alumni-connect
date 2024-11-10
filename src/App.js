@@ -17,6 +17,8 @@ import EventDetailsPage from "./pages/user/EventDetailsPage";
 import UserJobPostPage from "./pages/user/UserJobPostPage";
 import UserJobPostDetailsPage from "./pages/user/UserJobPostDetailsPage";
 import CVPage from "./pages/user/CVPage";
+import CreateJobPostPage from "./pages/user/CreateJobPostPage";
+import CreateEventPage from "./pages/user/CreateEventPage";
 
 function App() {
   return (
@@ -28,7 +30,9 @@ function App() {
         <Route path="/user-event" element={<UserEventPage />} />
         <Route path="/event/:id" element={<EventDetailsPage />} />
         <Route path="/user-job-post" element={<UserJobPostPage />} />
+        <Route path="/create-event" element={<CreateEventPage />} />
         <Route path="/user-job-post/:id" element={<UserJobPostDetailsPage />} />
+        <Route path="/create-job-post" element={<CreateJobPostPage />} />
         <Route path="/cv" element={<CVPage />} />
         <Route path="/admin/dashboard" element={<DashboardPage />} />
         <Route path="/admin/user" element={<UserPage />} />

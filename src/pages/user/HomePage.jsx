@@ -1,6 +1,6 @@
 import React from 'react';
-import { Layout, Menu, List, Typography } from 'antd';
-import { Link } from 'react-router-dom'; // Import Link
+import { Layout, Menu, List, Typography, Button } from 'antd';
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
 import UserLayout from '../../layouts/UserLayout';
 
 const { Sider, Content } = Layout;
@@ -16,6 +16,12 @@ const posts = [
 ];
 
 const HomePage = () => {
+  const navigate = useNavigate(); // Initialize the navigation hook
+
+  const handleCreatePostClick = () => {
+    navigate('/create-post'); // Navigate to the CreatePostPage
+  };
+
   return (
     <UserLayout>
       <Layout style={{ padding: '24px', background: '#f0f2f5' }}>
@@ -36,6 +42,16 @@ const HomePage = () => {
         <Layout style={{ padding: '0 24px 24px' }}>
           <Content style={{ padding: '24px', minHeight: 280, background: '#fff', borderRadius: '8px' }}>
             <Title level={3} style={{ color: '#1890ff', marginBottom: '20px' }}>Bài Viết Mới Nhất</Title>
+            
+            {/* Button to navigate to the Create Post page */}
+            <Button 
+              type="primary" 
+              onClick={handleCreatePostClick} 
+              style={{ marginBottom: '20px' }}
+            >
+              Tạo Bài Viết Mới
+            </Button>
+
             <List
               itemLayout="vertical"
               size="large"
@@ -53,7 +69,7 @@ const HomePage = () => {
                   extra={<img width={180} alt="ảnh bìa bài viết" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/FPT_logo_2010.svg/1200px-FPT_logo_2010.svg.png" style={{ borderRadius: '8px' }} />}
                 >
                   <List.Item.Meta
-                    title={<Link to={`/post/${post.id}`} style={{ fontSize: '18px', color: '#1890ff' }}>{post.title}</Link>} // Updated Link
+                    title={<Link to={`/post/${post.id}`} style={{ fontSize: '18px', color: '#1890ff' }}>{post.title}</Link>}
                     description={<Text style={{ color: '#595959' }}>{post.content}</Text>}
                   />
                 </List.Item>

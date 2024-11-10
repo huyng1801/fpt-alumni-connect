@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, DatePicker, Select, notification, InputNumber } from 'antd';
+import { Form, Input, Button, DatePicker, Select, notification, InputNumber, Upload, message } from 'antd';
 import { Layout, Row, Col } from 'antd';
-import moment from 'moment';
+import { UploadOutlined } from '@ant-design/icons';
 import UserLayout from '../../layouts/UserLayout';
 
 const { TextArea } = Input;
@@ -24,6 +24,15 @@ const CVPage = () => {
         description: 'CV của bạn đã được gửi thành công.',
       });
     }, 1000);
+  };
+
+  // Handle file upload
+  const handleFileChange = (info) => {
+    if (info.file.status === 'done') {
+      message.success(`${info.file.name} file uploaded successfully`);
+    } else if (info.file.status === 'error') {
+      message.error(`${info.file.name} file upload failed.`);
+    }
   };
 
   return (
@@ -225,18 +234,30 @@ const CVPage = () => {
                 </Form.Item>
               </Col>
 
-              {/* Is Deal */}
+              {/* File Upload (CV) */}
               <Col span={12}>
                 <Form.Item
-                  label="Đã thỏa thuận"
-                  name="isDeal"
-                  valuePropName="checked"
+                  label="Tải lên CV"
+                  name="cvFile"
+                  rules={[{ required: true, message: 'Vui lòng tải lên CV của bạn!' }]}
                 >
-                  <Select defaultValue={false} style={{ width: '100%' }}>
-                    <Option value={false}>Không</Option>
-                    <Option value={true}>Có</Option>
-                  </Select>
+                  <Upload
+                    name="cv"
+                    action="/upload"
+                    beforeUpload={(file) => {
+                      const isPdf = file.type === 'application/pdf';
+                      if (!isPdf) {
+                        message.error('Chỉ chấp nhận file PDF!');
+                      }
+                      return isPdf;
+                    }}
+                    onChange={handleFileChange}
+                    showUploadList={false}
+                  >
+                    <Button icon={<UploadOutlined />}>Tải lên CV</Button>
+                  </Upload>
                 </Form.Item>
+                
               </Col>
             </Row>
 

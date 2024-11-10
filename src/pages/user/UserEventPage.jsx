@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { List, Typography, Button, Modal, Card, Descriptions } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
 import UserLayout from '../../layouts/UserLayout'; // Adjust the import path as needed
 
 const { Title, Text } = Typography;
@@ -9,6 +9,8 @@ const UserEventPage = () => {
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  
+  const navigate = useNavigate(); // Initialize the navigation hook
 
   // Example data for events
   const mockEvents = [
@@ -58,10 +60,24 @@ const UserEventPage = () => {
     setSelectedEvent(null);
   };
 
+  // Navigate to Create Event Page
+  const handleCreateEventClick = () => {
+    navigate('/create-event'); // Navigate to the create event page
+  };
+
   return (
     <UserLayout>
       <div style={{ padding: '24px' }}>
         <Title level={3}>Danh Sách Sự Kiện</Title>
+
+        {/* Button to create new event */}
+        <Button
+          type="primary"
+          onClick={handleCreateEventClick}
+          style={{ marginBottom: '20px' }}
+        >
+          Tạo Sự Kiện Mới
+        </Button>
 
         <List
           itemLayout="vertical"
