@@ -1,141 +1,99 @@
-import React, { useState } from 'react';
-import { Layout, Typography, Input, Button, List } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Layout, Typography, Button, Space, Divider, Skeleton, List } from 'antd';
 import { useParams } from 'react-router-dom';
 import UserLayout from '../../layouts/UserLayout';
+import PostService from '../../services/PostService';
+import CommentService from '../../services/CommentService'; // Import CommentService
 
 const { Content } = Layout;
 const { Title, Paragraph, Text } = Typography;
 
-// Sample data for posts with multiple comments
-const posts = [
-  {
-    id: 1,
-    title: 'Hiểu Về React Hooks',
-    content: 'Một cái nhìn sâu về React Hooks...',
-    author: 'Nguyễn Văn A',
-    createdAt: '2024-11-01',
-    views: 100,
-    comments: [
-      {
-        id: 1,
-        content: 'Bài viết rất hữu ích, cảm ơn tác giả!',
-        author: 'Nguyễn Văn B',
-        createdAt: '2024-11-02',
-      },
-      {
-        id: 2,
-        content: 'Tôi muốn tìm hiểu thêm về Hooks!',
-        author: 'Trần Thị C',
-        createdAt: '2024-11-03',
-      },
-    ],
-  },
-  {
-    id: 2,
-    title: 'Tương Lai Của AI',
-    content: 'Khám phá các xu hướng trong trí tuệ nhân tạo...',
-    author: 'Trần Thị B',
-    createdAt: '2024-10-25',
-    views: 250,
-    comments: [
-      {
-        id: 1,
-        content: 'AI sẽ thay đổi thế giới như thế nào?',
-        author: 'Lê Văn D',
-        createdAt: '2024-10-26',
-      },
-      {
-        id: 2,
-        content: 'Rất mong chờ những cải tiến trong lĩnh vực này.',
-        author: 'Nguyễn Thị E',
-        createdAt: '2024-10-27',
-      },
-    ],
-  },
-  {
-    id: 3,
-    title: 'Mẹo Sống Khỏe Mạnh',
-    content: 'Các mẹo để duy trì một lối sống lành mạnh...',
-    author: 'Lê Văn C',
-    createdAt: '2024-10-20',
-    views: 300,
-    comments: [],
-  },
-];
-
 const PostDetail = () => {
   const { id } = useParams(); // Get the post ID from the URL parameters
-  const post = posts.find((p) => p.id === parseInt(id)); // Find the post by ID
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [comments, setComments] = useState([]);
+  const [commentsLoading, setCommentsLoading] = useState(true);
 
-  const [newComment, setNewComment] = useState('');
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const fetchedPost = await PostService.getPostById(id);
+        setPost(fetchedPost);
+      } catch (error) {
+        console.error('Error fetching post:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleCommentSubmit = () => {
-    if (newComment.trim() !== '') {
-      post.comments.push({
-        id: post.comments.length + 1,
-        content: newComment,
-        author: 'Người dùng', // Replace with actual user data if available
-        createdAt: new Date().toLocaleDateString('vi-VN'),
-      });
-      setNewComment(''); // Clear the input field after submission
-    }
-  };
+    const fetchComments = async () => {
+      try {
+        const fetchedComments = await CommentService.getCommentsByPostId(id);
+        setComments(fetchedComments);
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+      } finally {
+        setCommentsLoading(false);
+      }
+    };
+
+    fetchPost();
+    fetchComments();
+  }, [id]);
 
   const handleRepost = () => {
-    // Logic for reposting (e.g., send to server or update user feed)
-    console.log(`Reposted: ${post.title}`);
-    alert(`Bạn đã chia sẻ bài viết: ${post.title}`);
+    console.log(`Reposted: ${post?.title}`);
+    alert(`Bạn đã chia sẻ bài viết: ${post?.title}`);
   };
 
   return (
     <UserLayout>
-        <Content style={{ padding: '24px', minHeight: 280, background: '#fff', borderRadius: '8px' }}>
-          {post ? (
-            <>
-              <Title level={2}>{post.title}</Title>
-              <Text type="secondary">Tác giả: {post.author}</Text>
-              <br />
-              <Text type="secondary">Ngày đăng: {new Date(post.createdAt).toLocaleDateString('vi-VN')}</Text>
-              <br />
+      <Content style={{ padding: '24px', background: '#fff', borderRadius: '8px' }}>
+        {loading ? (
+          <Skeleton active paragraph={{ rows: 4 }} />
+        ) : post ? (
+          <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+            <Title level={2}>{post.title}</Title>
+            <Space direction="horizontal">
+              <Text type="secondary">Tác giả ID: {post.authorId}</Text>
+              <Divider type="vertical" />
               <Text type="secondary">Lượt xem: {post.views}</Text>
-              <br /><br />
-              <Paragraph>{post.content}</Paragraph>
+            </Space>
+            <Divider />
+            <Paragraph>{post.content}</Paragraph>
+            <Space direction="horizontal">
+              <Text type="secondary">Trạng thái: {post.status}</Text>
+              <Divider type="vertical" />
+              <Text type="secondary">Chế độ riêng tư: {post.isPrivate ? 'Có' : 'Không'}</Text>
+            </Space>
+            <Button type="primary" onClick={handleRepost} style={{ marginTop: '10px' }}>
+              Chia sẻ bài viết
+            </Button>
 
-              {/* Repost Button */}
-              <Button type="default" onClick={handleRepost} style={{ marginTop: '10px' }}>
-                Chia sẻ bài viết
-              </Button>
-
-              <Title level={3} style={{ marginTop: '20px' }}>Bình luận</Title>
-              <Input.TextArea
-                rows={4}
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Viết bình luận của bạn..."
-              />
-              <Button type="primary" onClick={handleCommentSubmit} style={{ marginTop: '10px' }}>
-                Gửi
-              </Button>
-
+            <Divider />
+            <Title level={4}>Bình luận</Title>
+            {commentsLoading ? (
+              <Skeleton active paragraph={{ rows: 2 }} />
+            ) : comments.length > 0 ? (
               <List
-                itemLayout="horizontal"
-                dataSource={post.comments}
+                itemLayout="vertical"
+                dataSource={comments}
                 renderItem={(comment) => (
                   <List.Item>
-                    <List.Item.Meta
-                      title={<Text strong>{comment.author}</Text>}
-                      description={<Text>{comment.content}</Text>}
-                    />
-                    <Text type="secondary">{comment.createdAt}</Text>
+                    <Text strong>Người bình luận ID: {comment.authorId}</Text>
+                    <Paragraph>{comment.content}</Paragraph>
                   </List.Item>
                 )}
-                style={{ marginTop: '20px' }}
               />
-            </>
-          ) : (
-            <Title level={3}>Bài viết không tồn tại</Title>
-          )}
-        </Content>
+            ) : (
+              <Text type="secondary">Chưa có bình luận nào cho bài viết này.</Text>
+            )}
+          </Space>
+        ) : (
+          <Title level={3}>Bài viết không tồn tại</Title>
+        )}
+      </Content>
     </UserLayout>
   );
 };

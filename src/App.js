@@ -19,12 +19,14 @@ import UserJobPostDetailsPage from "./pages/user/UserJobPostDetailsPage";
 import CVPage from "./pages/user/CVPage";
 import CreateJobPostPage from "./pages/user/CreateJobPostPage";
 import CreateEventPage from "./pages/user/CreateEventPage";
+import LoginPage from "./pages/user/LoginPage";
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/post/:id" element={<PostDetail />} />
         <Route path="/create-post" element={<CreatePostPage />} />
         <Route path="/user-event" element={<UserEventPage />} />

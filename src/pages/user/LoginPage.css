@@ -1,0 +1,44 @@
+/* LoginPage.css */
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f7f7f7;
+  }
+  
+  .login-content {
+    max-width: 400px;
+    width: 100%;
+    padding: 24px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .login-title {
+    margin-bottom: 24px;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .alert-message {
+    margin-bottom: 16px;
+  }
+  
+  .google-login-btn {
+    text-align: center;
+  }
+  
+  @media (max-width: 480px) {
+    .login-content {
+      width: 90%;
+      padding: 16px;
+    }
+  
+    .login-title {
+      font-size: 20px;
+    }
+  }
+  
